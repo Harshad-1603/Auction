@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The Source Auction · Host Edition</title>
+  <link rel="stylesheet" href="styles-v6.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <span class="grid"></span>
+  </div>
+
+  <main class="shell">
+    <!-- LANDING -->
+    <section id="landing" class="screen active">
+      <div class="panel hero">
+        <div class="version">HOST EDITION · v6 · 10 MYSTERY EVIDENCE LOTS</div>
+        <p class="eyebrow">GSOE9010 · Literature Search Facilitation</p>
+        <h1>The Source Auction</h1>
+        <p class="subtitle">
+          Bid smart. React to new evidence. Negotiate. Then choose and rank the six sources
+          you trust most.
+        </p>
+
+        <div class="chips">
+          <span>🎤 Host-controlled</span>
+          <span>💰 $1,000 / group</span>
+          <span>🔟 10 auction lots</span>
+          <span>🤝 Trading round</span>
+          <span>🏆 Top-6 ranking</span>
+        </div>
+
+        <div class="rules">
+          <article>
+            <b>1</b>
+            <h3>Bid</h3>
+            <p>Each group starts with $1,000. The host shows one mystery source at a time. Groups bid verbally.</p>
+          </article>
+          <article>
+            <b>2</b>
+            <h3>Discover</h3>
+            <p>You will not know everything when you buy. More source intelligence is revealed only after the auction.</p>
+          </article>
+          <article>
+            <b>3</b>
+            <h3>Negotiate</h3>
+            <p>After the reveal, groups get a short chance to buy, sell or swap sources with each other.</p>
+          </article>
+          <article>
+            <b>4</b>
+            <h3>Rank</h3>
+            <p>Each group chooses only its Top 6 sources from A–J and ranks those six from strongest to weakest.</p>
+          </article>
+        </div>
+
+        <div class="win-box">
+          <h2>How do you win?</h2>
+          <p>
+            Build a strong research portfolio, avoid wasting your budget, and make a strong final Top-6 judgement.
+            <strong>The exact model ranking and scoring weights stay hidden until the results screen.</strong>
+          </p>
+        </div>
+
+        <div class="settings">
+          <label>Starting budget
+            <input id="startingBudget" type="number" value="1000" min="100" step="50">
+          </label>
+          <label>Minimum bid
+            <input id="minimumBid" type="number" value="50" min="10" step="10">
+          </label>
+          <label>Bid increment
+            <input id="bidIncrement" type="number" value="50" min="10" step="10">
+          </label>
+          <label>Max sources / group
+            <input id="maxSources" type="number" value="3" min="1" max="10">
+          </label>
+        </div>
+
+        <button id="startBtn" class="btn primary xl">Start Auction →</button>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="game" class="screen">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">The Source Auction</p>
+          <h2 id="phaseTitle">Auction</h2>
+        </div>
+        <div class="steps">
+          <span id="stepAuction" class="step active">1 Auction</span>
+          <span id="stepReveal" class="step">2 Reveal</span>
+          <span id="stepTrade" class="step">3 Negotiate</span>
+          <span id="stepRank" class="step">4 Top 6</span>
+          <span id="stepResults" class="step">5 Winner</span>
+        </div>
+      </header>
+
+      <!-- AUCTION -->
+      <section id="phaseAuction" class="phase active">
+        <div class="two-col">
+          <div class="panel auction-card">
+            <div class="row spread">
+              <span id="lotBadge" class="tag">LOT A · 1/10</span>
+              <span id="lotState" class="status">AVAILABLE</span>
+            </div>
+
+            <div class="research-question">
+              <span>COMMON RESEARCH QUESTION</span>
+              <strong>How effective is AI-assisted thermal imaging for early fault detection in solar PV panels?</strong>
+            </div>
+            <h2 id="lotTitle" class="lot-title"></h2>
+            <p id="lotTeaser" class="lead"></p>
+
+            <div class="clue-box">
+              <div class="clue-title">🔎 Auction evidence preview</div>
+              <ul id="auctionClues"></ul>
+            </div>
+
+            <div class="bid-metrics">
+              <div>
+                <span>Current bid</span>
+                <strong id="bidAmount">$0</strong>
+              </div>
+              <div>
+                <span>Highest bidder</span>
+                <strong id="bidLeader">—</strong>
+              </div>
+            </div>
+
+            <p class="muted">When a group calls the next bid, click that group. The website raises the bid automatically.</p>
+            <div id="bidButtons" class="bid-buttons"></div>
+
+            <div class="row spread auction-nav">
+              <button id="prevLot" class="btn secondary">← Previous</button>
+              <button id="soldBtn" class="btn success xl">SOLD!</button>
+              <button id="nextLot" class="btn primary">Next →</button>
+            </div>
+          </div>
+
+          <aside class="panel">
+            <p class="eyebrow">Live scoreboard</p>
+            <h2>Groups</h2>
+            <div id="auctionTeams" class="team-list"></div>
+          </aside>
+        </div>
+
+        <div class="next-wrap">
+          <button id="finishAuction" class="btn warning xl" disabled>Finish Auction & Reveal Intelligence →</button>
+        </div>
+      </section>
+
+      <!-- REVEAL -->
+      <section id="phaseReveal" class="phase">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Research intelligence</p>
+              <h2>What did the groups actually buy?</h2>
+              <p class="lead">Reveal information in two stages. The second reveal gives the full identity and limitations.</p>
+            </div>
+            <div class="row">
+              <button id="reveal1Btn" class="btn warning">Reveal Intelligence 1</button>
+              <button id="reveal2Btn" class="btn primary">Reveal Final Intelligence</button>
+            </div>
+          </div>
+
+          <div id="intelGrid" class="intel-grid"></div>
+
+          <div class="next-wrap">
+            <button id="openTrading" class="btn success xl" disabled>Open Negotiation Floor →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRADING -->
+      <section id="phaseTrade" class="phase">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Negotiation round</p>
+              <h2>Buy · Sell · Swap</h2>
+              <p class="lead">
+                Ask the room: <strong>“Does anyone want to negotiate for another source?”</strong>
+                Give groups time to make offers. Record only agreed deals.
+              </p>
+            </div>
+            <div class="timer-card">
+              <span>Trading time</span>
+              <strong id="tradeTimer">01:30</strong>
+              <div class="row">
+                <button id="startTradeTimer" class="btn secondary small">Start</button>
+                <button id="resetTradeTimer" class="btn secondary small">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-layout">
+            <div class="trade-form">
+              <h3>💵 Record a sale / transfer</h3>
+              <label>Seller
+                <select id="seller"></select>
+              </label>
+              <label>Source
+                <select id="sellerSource"></select>
+              </label>
+              <label>Buyer
+                <select id="buyer"></select>
+              </label>
+              <label>Agreed price
+                <input id="tradePrice" type="number" value="100" min="0" step="50">
+              </label>
+              <button id="recordSale" class="btn primary">Record Deal</button>
+            </div>
+
+            <div class="trade-form">
+              <h3>🔄 Record a source swap</h3>
+              <label>Group A
+                <select id="swapGroupA"></select>
+              </label>
+              <label>Group A source
+                <select id="swapSourceA"></select>
+              </label>
+              <label>Group B
+                <select id="swapGroupB"></select>
+              </label>
+              <label>Group B source
+                <select id="swapSourceB"></select>
+              </label>
+              <button id="recordSwap" class="btn primary">Record Swap</button>
+            </div>
+          </div>
+
+          <h3 class="portfolio-heading">Current portfolios after negotiation</h3>
+          <div id="tradeTeams" class="portfolio-grid"></div>
+
+          <div class="next-wrap">
+            <button id="finishTrading" class="btn success xl">Close Trading & Start Top-6 Ranking →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RANKING -->
+      <section id="phaseRank" class="phase">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Final group judgement</p>
+              <h2>Choose & Rank Only Your Top 6</h2>
+              <p class="lead">
+                Give groups time to agree. Then ask each group for six source letters from A–J,
+                ordered strongest → weakest. Example: <strong>ACBEDG</strong>.
+              </p>
+            </div>
+            <div class="timer-card">
+              <span>Ranking time</span>
+              <strong id="rankTimer">02:00</strong>
+              <div class="row">
+                <button id="startRankTimer" class="btn secondary small">Start</button>
+                <button id="resetRankTimer" class="btn secondary small">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="rankingGrid" class="ranking-grid"></div>
+
+          <div class="next-wrap">
+            <button id="calculateResults" class="btn primary xl">Calculate Scores & Reveal Winner →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <section id="phaseResults" class="phase">
+        <div class="panel result-panel">
+          <p class="eyebrow center">Final results</p>
+          <h2 class="center">Research Investment Champions</h2>
+
+          <div class="winner">
+            <div class="trophy">🏆</div>
+            <span>Winner</span>
+            <h1 id="winnerName">—</h1>
+            <strong id="winnerPoints">0 points</strong>
+          </div>
+
+          <div id="resultTable"></div>
+
+          <div class="debrief">
+            <h3>Suggested model Top 6</h3>
+            <div class="model-order">A → B → C → D → E → F</div>
+            <p>
+              This is the model order used for this designed activity. It is not a universal rule.
+              Use the differences in group rankings to discuss evidence quality, relevance, recency,
+              publication type and potential bias.
+            </p>
+          </div>
+
+          <div class="scoring-reveal">
+            <h3>Scoring used</h3>
+            <p><strong>Portfolio:</strong> points based on the quality of sources a group owns after trading.</p>
+            <p><strong>Money:</strong> +1 per $100 remaining, capped at +5.</p>
+            <p><strong>Top-6 ranking:</strong> +2 for every model Top-6 source selected, plus +1 for every exact position.</p>
+          </div>
+
+          <button id="restart" class="btn secondary">Restart Game</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="soldOverlay" class="sold-overlay"><div>SOLD!</div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app-v6.js"></script>
+</body>
+</html>
